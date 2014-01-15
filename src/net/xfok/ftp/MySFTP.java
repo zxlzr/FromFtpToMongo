@@ -1,10 +1,12 @@
 package net.xfok.ftp;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
@@ -19,7 +21,6 @@ import java.util.Vector;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
-
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
@@ -159,7 +160,7 @@ public static void getdata(){
 	
 	
 }
-public static void getftpdata() throws SftpException, IOException{
+public static void getftpdata(int starttime) throws SftpException, IOException{
 	
 	Configuration conf = new Configuration();
 	conf.set("fs.default.name","hdfs://10.214.0.144:9000");
@@ -175,7 +176,7 @@ public static void getftpdata() throws SftpException, IOException{
 	String password = "!6CePdP5Vn#4$";
 
 	//String saveFile = "/home/hadoop/";//linux
-	String saveFile = "D:\\tmp\\";
+	String saveFile = System.getProperty("java.io.tmpdir");
 
 	String filename = null;
 	SimpleDateFormat df = new SimpleDateFormat("MMM d",Locale.ENGLISH);//
@@ -213,25 +214,138 @@ public static void getftpdata() throws SftpException, IOException{
 
 	//System.out.println(thatday);
 
-	if(thatmonth.equals(thismonth)){
-		if(thatday.equals(thisday)){
-			
+	
 			String[] strs=tmp.split("ORDERSTATUS");
 			filename="ORDERSTATUS"+strs[1];
-			System.out.println("downloading    "+filename);
-		   sf.download(".",filename, saveFile+filename, sftp);
-		   System.out.println("store in "+saveFile+filename);
-		   src = new Path(saveFile+filename);
-		    dst = new Path("/user/hadoop/upload");
-		    hdfs.copyFromLocalFile(src, dst);
-		    
-		    System.out.println("Upload to " + conf.get("fs.default.name"));
+			int j;
 			
-		}
+			if((j=filename.indexOf("ORDERSTATUS_MOVERS_BN"))!=-1){
+				//System.out.println("find file "+filename);
+				String Timestamp=filename.substring(22,30);
+				int timenow=Integer.parseInt(Timestamp);
+				if(timenow>=starttime){
+					System.out.println("start to download file from "+starttime);
+					//System.out.println(Timestamp);
+					System.out.println("downloading    "+filename);
+				   sf.download(".",filename, saveFile+filename, sftp);
+				   System.out.println("store in "+saveFile+filename);
+				   
+				   File f1 = new File(saveFile+filename);
+				   File f2 = new File(saveFile+"orderstatus_verizon_"+Timestamp+".txt");
+				   String[] values = new String[100];
+				   FileReader reader = new FileReader(f1);
+				   FileWriter writer = new FileWriter(f2);
+				   BufferedReader br = new BufferedReader(reader);
+				   BufferedWriter bw = new BufferedWriter(writer);
+			       String line="";
+			       String keyline =br.readLine();
+			       String[] keys=keyline.split("~");
+			     
+			     
+			      // String writekeys="DateTime\001CHANNEL\001VENDOR";
+			       //bw.write(writekeys);
+			      // bw.newLine();
+		   	   //bw.flush();
+			       //begin
+			       while((line=br.readLine())!=null){
+			    	 line=line+"\001";
+			    		
+			    	    values=line.split("\\~");//文件时间以后在弄
+			    	   // System.out.println(values[3]);
+			    	 // /  for(int i=0;i<values.length;i++){
+			    	    //	System.out.println(values[i]);
+			    	    //	}//main
+			    	    StringBuffer tmp1 = new StringBuffer("");
+			    	    tmp1.append(Timestamp+"12:00:00"+"\001");//DateTime
+			    	    tmp1.append(values[0]+"\001");//CHANNEL
+			    	    tmp1.append(values[1]+"\001");//VENDOR
+			    	    tmp1.append("BV"+"\001");//PARTNER
+			    	    tmp1.append(values[2]+"\001");//REP_LNAME
+			    	    tmp1.append(values[3]+"\001");//REP_FNAME
+			    	    tmp1.append(values[4]+"\001");//STORE_ID
+			    	    tmp1.append(values[5]+"\001");//SOURCE
+			    	    tmp1.append(values[6]+"\001");//BTN
+			    	    tmp1.append(values[7]+"\001");//CBR
+			    	    tmp1.append(values[8]+"\001");//CUST_LNAME
+			    	    tmp1.append(values[9]+"\001");//CUST_FNAME
+			    	    tmp1.append(values[10]+"\001");//ADDRESS
+			    	    tmp1.append(values[11]+"\001");//CITY
+			    	    tmp1.append(values[12]+"\001");//STATE
+			    	    tmp1.append(values[13]+"\001");//ZIP
+			    	    tmp1.append(values[14]+"\001");//EMAIL
+			    	    tmp1.append(values[15]+"\001");//SALES_DATE
+			    	    tmp1.append(values[16]+"\001");//ORDER_NBR
+			    	    tmp1.append(values[17]+"\001");//MON
+			    	    tmp1.append(values[18]+"\001");//USOC
+			    	    tmp1.append(values[19]+"\001");//PRODUCT_GROUP
+			    	    tmp1.append(values[20]+"\001");//PRODUCT_ID
+			    	    tmp1.append(values[21]+"\001");//PRODUCT
+			    	    tmp1.append(values[22]+"\001");//QTY
+			    	    tmp1.append(values[23]+"\001");//INSTALL_DATE
+			    	    tmp1.append(values[24]+"\001");//CANCEL_DATE
+			    	    
+			    	    tmp1.append(values[25]+"\001");//CANCEL_TYPE
+			    	    tmp1.append(values[26]+"\001");//CANCEL_REASON1
+			    	    tmp1.append(values[27]+"\001");//CANCEL_REMARKS
+			    	  
+			    	 
+			    	
+			    	
+			    	    if(values[23]!=""){
+			 			   
+			    	    	  tmp1.append("Installed"+"\001");
+			 			   
+			 		   }
+			    	    else if(values[24]!=""){
+			    	    	tmp1.append("Cancelled"+"\001");
+			    	    
+			    	    	
+			    	    }
+			    	    else if(values[24]!=""&&values[23]!=""){
+			    	    	tmp1.append("Disconnected"+"\001");
+			    	    
+			    	    	
+			    	    	
+			    	    }
+			    	    else{
+			    	    	tmp1.append(""+"\001");
+
+			    	    	
+			    	    }
+			    	    tmp1.append(values[28]+"\001");//SEL_DUE_DATE
+			    	    tmp1.append(values[29]+"\001");//ONT
+			    	    tmp1.append(values[30]+"\001");//SELF_INSTALL
+			    	  
+			    	     tmp1.append(values[31]+"\001");//eONT_Flag
+			    	    tmp1.append(values[32].replace("\001","")+"\001");//SI_Offered
+			    	   //  System.out.println(values[32]);
+			    	    
+			    	    bw.write(tmp1.toString());
+			    	    bw.newLine();
+			    	    bw.flush();
+			    	    
+			    	   }
+			    	   reader.close();
+			    	   writer.close();
+					
+					
+					
+					
+				}
+				else {
+					System.out.println("there is no new files");
+					
+				}
+				
+				
+				
+				
+			   
+
+				
+			}
 		
-	}
-	
-	
+		 
 	}
 
 
@@ -252,29 +366,178 @@ public static void getftpdata() throws SftpException, IOException{
 	//System.out.println(thatmonth);
 
 	//System.out.println(thatday);
+	         String[] strs=tmp.split("ORDERSTATUS");
+	         filename="ORDERSTATUS"+strs[1];
+			int j;
+			if((j=filename.indexOf("ORDERSTATUS_MOVERS_DTV"))!=-1){
+				String Timestamp=filename.substring(23,31);
+				int timenow=Integer.parseInt(Timestamp);
+				System.out.println(timenow);
+				if(timenow>=starttime){
+					Timestamp=filename.substring(23,31);
+				
+					System.out.println("start to download file from "+starttime);
+					System.out.println("downloading    "+filename);
+				   sf.download(".",filename, saveFile+filename, sftp);
+				   System.out.println("store in "+saveFile+filename);
+				   
+				   File f1 = new File(saveFile+filename);
+				   File f2 = new File(saveFile+"orderstatus_verizon_"+Timestamp+".txt");
+				   System.out.println(saveFile+"orderstatus_verizon_"+Timestamp+".txt");
+				   String[] values = new String[100];
+				   FileReader reader = new FileReader(f1);
+				   FileWriter writer = new FileWriter(f2,true);
+				   BufferedReader br = new BufferedReader(reader);
+				   BufferedWriter bw = new BufferedWriter(writer);
+			       String line="";
+			       String keyline =br.readLine();
+			       String[] keys=keyline.split("~");
+			     
+			     
+			      // String writekeys="DateTime\001CHANNEL\001VENDOR";
+			       //bw.write(writekeys);
+			      // bw.newLine();
+		   	   //bw.flush();
+			       //begin
+			       while((line=br.readLine())!=null){
+			    	 line=line+"\001";
+			    		
+			    	    values=line.split("\\~");//文件时间以后在弄
+			    	   // System.out.println(values[3]);
+			    	 // /  for(int i=0;i<values.length;i++){
+			    	    //	System.out.println(values[i]);
+			    	    //	}//main
+			    	    StringBuffer tmp1 = new StringBuffer("");
+			    	    tmp1.append(Timestamp+"12:00:00"+"\001");//DateTime
+			    	    tmp1.append(values[0]+"\001");//CHANNEL
+			    	    tmp1.append(values[1]+"\001");//VENDOR
+			    	    tmp1.append("DTV"+"\001");//PARTNER
+			    	    tmp1.append(values[2]+"\001");//REP_LNAME
+			    	    tmp1.append(values[3]+"\001");//REP_FNAME
+			    	    tmp1.append(values[4]+"\001");//STORE_ID
+			    	    tmp1.append(values[5]+"\001");//SOURCE
+			    	    tmp1.append(values[6]+"\001");//BTN
+			    	    tmp1.append(values[7]+"\001");//CBR
+			    	    tmp1.append(values[8]+"\001");//CUST_LNAME
+			    	    tmp1.append(values[9]+"\001");//CUST_FNAME
+			    	    tmp1.append(values[10]+"\001");//ADDRESS
+			    	    tmp1.append(values[11]+"\001");//CITY
+			    	    tmp1.append(values[12]+"\001");//STATE
+			    	    tmp1.append(values[13]+"\001");//ZIP
+			    	    tmp1.append(values[14]+"\001");//EMAIL
+			    	    tmp1.append(values[15]+"\001");//SALES_DATE
+			    	    tmp1.append(values[16]+"\001");//ORDER_NBR
+			    	    tmp1.append(values[17]+"\001");//MON
+			    	    tmp1.append(values[18]+"\001");//USOC
+			    	    tmp1.append(values[19]+"\001");//PRODUCT_GROUP
+			    	    tmp1.append(values[20]+"\001");//PRODUCT_ID
+			    	    tmp1.append(values[21]+"\001");//PRODUCT
+			    	    tmp1.append(""+"\001");//QTY        
+			    	    tmp1.append(values[22]+"\001");//INSTALL_DATE
+			    	    tmp1.append(values[23]+"\001");//CANCEL_DATE
+			    	    tmp1.append(values[24]+"\001");//CANCEL_TYPE
+			    	    
+			    	    tmp1.append(values[25]+"\001");//CANCEL_REASON1
+			    	    tmp1.append(values[26]+"\001");//CANCEL_REMARKS
+			    	  
+			    	  
+			    	 
+			    	
+			    	
+			    	    if(values[22]!=""){
+			 			   
+			    	    	  tmp1.append("Installed"+"\001");
+			 			   
+			 		   }
+			    	    else if(values[23]!=""){
+			    	    	tmp1.append("Cancelled"+"\001");
+			    	    
+			    	    	
+			    	    }
+			    	    else if(values[22]!=""&&values[23]!=""){
+			    	    	tmp1.append("Disconnected"+"\001");
+			    	    
+			    	    	
+			    	    	
+			    	    }
+			    	    else{
+			    	    	tmp1.append(""+"\001");
 
-	if(thatmonth.equals(thismonth)){
-		if(thatday.equals(thisday)){
-			
-			String[] strs=tmp.split("ORDERSTATUS");
-			filename="ORDERSTATUS"+strs[1];
-			System.out.println("downloading    "+filename);
-		   sf.download(".",filename, saveFile+filename, sftp);
-		   System.out.println("store in "+saveFile+filename);
-		   src = new Path(saveFile+filename);
-		    dst = new Path("/user/hadoop/upload");
-		    hdfs.copyFromLocalFile(src, dst);
-		    
-		    System.out.println("Upload to " + conf.get("fs.default.name"));
-			
-		}
+			    	    	
+			    	    } //ORDERSTATUS
+			    	    tmp1.append(""+"\001");//SEL_DUE_DATE
+			    	    tmp1.append(""+"\001");//ONT
+			    	    tmp1.append(""+"\001");//SELF_INSTALL
+			    	  
+			    	     tmp1.append(""+"\001");//eONT_Flag
+			    	    tmp1.append(""+"\001");//SI_Offered
+			    	   //  System.out.println(values[32]);
+			    	    
+			    	    bw.write(tmp1.toString());
+			    	    bw.newLine();
+			    	    bw.flush();
+			    	    
+			    	   }
+			    	   reader.close();
+			    	   writer.close();
+			    	      src = new Path(saveFile+"orderstatus_verizon_"+Timestamp+".txt");
+					      dst = new Path("/user/hadoop/upload");
+					    hdfs.copyFromLocalFile(src, dst);
+					  System.out.println("Upload "+saveFile+"orderstatus_verizon_"+Timestamp+".txt"+"to  " + conf.get("fs.default.name"));
+					  //File file = new File(saveFile+"orderstatus_verizon_"+Timestamp+".txt");
+					 // file.delete();
+					
+				   
+					
+					
+				}
+				else {
+					System.out.println("there is no new files");
+					
+				}
+				
+			}
 		
-	}
+		   
+		   
+			
+		
+		   
+		   
+		   
+		   
+		   
+		   
+		   
+		   
+		   
+		   
+		   
+		   
+		   
+		   
+		   
+		   
+		   
+		   
+		   
+		 //  src = new Path(saveFile+filename);
+		   // dst = new Path("/user/hadoop/upload");
+		  //  hdfs.copyFromLocalFile(src, dst);
+		    
+		   // System.out.println("Upload to " + conf.get("fs.default.name"));
+
 	
 	
 	
 	}
 	
+	//上传文件到hdfs
+	//删除临时文件
+	
+	
+	
+	/*
 	
 	
     Mongo mongo = new Mongo("10.214.0.144", 27017);//链接配置
@@ -335,10 +598,10 @@ public static void getftpdata() throws SftpException, IOException{
 	
 	
    
-
+*/
 		
 
-	
+	System.out.println("all files have been put to hdfs,have fun! ");
 	
 	
 	
@@ -349,10 +612,14 @@ public static void main(String[] args) throws IOException, SftpException, ParseE
 
 
 	String Starttime="";
+	int filestarttime=20140113;//后期由系统产生
+	
+	
 if(args.length==0)
 {//没输出时间，默认系统时间
-	Starttime="15:00:00";
-	System.out.println("The system will get ftp data at 15:00:00 everyday");
+	Starttime="23:40:00";
+	System.out.println("usage:Ftp2Hdfs_fat.jar 15:00:00 20140113\n");
+	System.out.println("The system will get ftp data at 15:00:00 everyday and get data from time"+filestarttime);
 }
 	
 else 
@@ -360,11 +627,12 @@ else
 	
 	
 	Starttime=args[0];
-	System.out.println("The system will get ftp data at "+Starttime+" everyday");
+	filestarttime=Integer.parseInt(args[1]);
+	System.out.println("The system will get ftp data at "+Starttime+" everyday and get data from time"+filestarttime);
 	}
 
 
-getftpdata();
+getftpdata(filestarttime);
 //一天的毫秒数
 long daySpan = 24 * 60 * 60 * 1000;
 
@@ -385,7 +653,7 @@ public void run() {
 	
 System.err.println("begin");
 	try {
-		getftpdata();
+		getftpdata(20140113);// need to change
 	} catch (SftpException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
