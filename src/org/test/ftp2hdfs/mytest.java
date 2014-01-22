@@ -1,9 +1,6 @@
-package net.xfok.ftp;
+package org.test.ftp2hdfs;
 
-import static org.junit.Assert.fail;
 
-import java.io.IOException;
-import java.text.ParseException;
 import java.util.Arrays;
 
 import org.apache.hadoop.conf.Configuration;
@@ -14,19 +11,15 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hdfs.DistributedFileSystem;
 import org.apache.hadoop.hdfs.protocol.DatanodeInfo;
-import org.junit.Test;
 
-import com.jcraft.jsch.SftpException;
 
-public class Put2Hdfs {
+public class mytest {
 
 	public static void main(String[] args) throws Exception {  
     	  
     	  testUpload();
       }
-        public void test() {
-                System.out.println("Not yet implemented");
-        }
+     
         
         //上传本地文件到HDFS
        
