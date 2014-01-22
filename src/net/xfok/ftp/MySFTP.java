@@ -444,18 +444,18 @@ public static void getftpdata(int starttime) throws SftpException, IOException{
 			    	
 			    	    if(!values[22].equals("")){
 			    	    	if(!values[23].equals("")){
-			    	    		System.out.println("disconnected");
+			    	    	
 			    	    	   tmp1.append("disconnected"+"\001");
 			    	    	}
-			    	    	else{System.out.println("installed");
+			    	    	else{
 			    	    	   tmp1.append("installed"+"\001");
 			    	    	}
 			    	    }
 			    	    else{
-			    	        if(!values[23].equals("")){System.out.println("cancelled");
+			    	        if(!values[23].equals("")){
 			    	    	   tmp1.append("cancelled"+"\001");
 			    	    	}
-			    	    	else{System.out.println("submitted");
+			    	    	else{
 			    	    	   tmp1.append("submitted"+"\001");
 			    	    	}
 			    	    } //ORDERSTATUS
