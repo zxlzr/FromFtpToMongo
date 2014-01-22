@@ -442,8 +442,8 @@ public static void getftpdata(int starttime) throws SftpException, IOException{
 			    	 
 			    	
 			    	
-			    	    if(!values[23].equals("")){
-			    	    	if(!values[24].equals("")){
+			    	    if(!values[22].equals("")){
+			    	    	if(!values[23].equals("")){
 			    	    	   tmp1.append("disconnected"+"\001");
 			    	    	}
 			    	    	else{
@@ -451,7 +451,7 @@ public static void getftpdata(int starttime) throws SftpException, IOException{
 			    	    	}
 			    	    }
 			    	    else{
-			    	        if(!values[24].equals("")){
+			    	        if(!values[23].equals("")){
 			    	    	   tmp1.append("cancelled"+"\001");
 			    	    	}
 			    	    	else{
