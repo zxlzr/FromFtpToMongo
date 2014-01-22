@@ -39,7 +39,7 @@ import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 
 
-public class MySFTP {
+public class test{
 
 /**
 * 连接sftp服务器
@@ -226,11 +226,11 @@ public static void getftpdata(int starttime) throws SftpException, IOException{
 				//System.out.println("find file "+filename);
 				String Timestamp=filename.substring(22,30);
 				int timenow=Integer.parseInt(Timestamp);
-				if(timenow>=starttime){
+				if(timenow==starttime){
 					System.out.println("start to download file from "+starttime);
 					//System.out.println(Timestamp);
 					System.out.println("downloading    "+filename);
-				   sf.download(".",filename, saveFile+filename, sftp);
+				  sf.download(".",filename, saveFile+filename, sftp);
 				   System.out.println("store in "+saveFile+filename);
 				   
 				   File f1 = new File(saveFile+filename);
@@ -245,13 +245,13 @@ public static void getftpdata(int starttime) throws SftpException, IOException{
 			       String[] keys=keyline.split("~");
 			     
 			     
-			      // String writekeys="DateTime\001CHANNEL\001VENDOR";
+			      // String writekeys="DateTime~CHANNEL~VENDOR";
 			       //bw.write(writekeys);
 			      // bw.newLine();
 		   	   //bw.flush();
 			       //begin
 			       while((line=br.readLine())!=null){
-			    	 line=line+"\001";
+			    	 line=line+"~";
 			    		
 			    	    values=line.split("\\~");//文件时间以后在弄
 			    	 //  System.out.println(line);
@@ -259,63 +259,63 @@ public static void getftpdata(int starttime) throws SftpException, IOException{
 			    	    //	System.out.println(values[i]);
 			    	    //	}//main
 			    	    StringBuffer tmp1 = new StringBuffer("");
-			    	    tmp1.append(Timestamp+"12:00:00"+"\001");//DateTime
-			    	    tmp1.append(values[0]+"\001");//CHANNEL
-			    	    tmp1.append(values[1]+"\001");//VENDOR
-			    	    tmp1.append("BV"+"\001");//PARTNER
-			    	    tmp1.append(values[2]+"\001");//REP_LNAME
-			    	    tmp1.append(values[3]+"\001");//REP_FNAME
-			    	    tmp1.append(values[4]+"\001");//STORE_ID
-			    	    tmp1.append(values[5]+"\001");//SOURCE
-			    	    tmp1.append(values[6]+"\001");//BTN
-			    	    tmp1.append(values[7]+"\001");//CBR
-			    	    tmp1.append(values[8]+"\001");//CUST_LNAME
-			    	    tmp1.append(values[9]+"\001");//CUST_FNAME
-			    	    tmp1.append(values[10]+"\001");//ADDRESS
-			    	    tmp1.append(values[11]+"\001");//CITY
-			    	    tmp1.append(values[12]+"\001");//STATE
-			    	    tmp1.append(values[13]+"\001");//ZIP
-			    	    tmp1.append(values[14]+"\001");//EMAIL
-			    	    tmp1.append(values[15]+"\001");//SALES_DATE
-			    	    tmp1.append(values[16]+"\001");//ORDER_NBR
-			    	    tmp1.append(values[17]+"\001");//MON
-			    	    tmp1.append(values[18]+"\001");//USOC
-			    	    tmp1.append(values[19]+"\001");//PRODUCT_GROUP
-			    	    tmp1.append(values[20]+"\001");//PRODUCT_ID
-			    	    tmp1.append(values[21]+"\001");//PRODUCT
-			    	    tmp1.append(values[22]+"\001");//QTY
-			    	    tmp1.append(values[23]+"\001");//INSTALL_DATE
-			    	    tmp1.append(values[24]+"\001");//CANCEL_DATE
+			    	    tmp1.append(Timestamp+"12:00:00"+"~");//DateTime
+			    	    tmp1.append(values[0]+"~");//CHANNEL
+			    	    tmp1.append(values[1]+"~");//VENDOR
+			    	    tmp1.append("BV"+"~");//PARTNER
+			    	    tmp1.append(values[2]+"~");//REP_LNAME
+			    	    tmp1.append(values[3]+"~");//REP_FNAME
+			    	    tmp1.append(values[4]+"~");//STORE_ID
+			    	    tmp1.append(values[5]+"~");//SOURCE
+			    	    tmp1.append(values[6]+"~");//BTN
+			    	    tmp1.append(values[7]+"~");//CBR
+			    	    tmp1.append(values[8]+"~");//CUST_LNAME
+			    	    tmp1.append(values[9]+"~");//CUST_FNAME
+			    	    tmp1.append(values[10]+"~");//ADDRESS
+			    	    tmp1.append(values[11]+"~");//CITY
+			    	    tmp1.append(values[12]+"~");//STATE
+			    	    tmp1.append(values[13]+"~");//ZIP
+			    	    tmp1.append(values[14]+"~");//EMAIL
+			    	    tmp1.append(values[15]+"~");//SALES_DATE
+			    	    tmp1.append(values[16]+"~");//ORDER_NBR
+			    	    tmp1.append(values[17]+"~");//MON
+			    	    tmp1.append(values[18]+"~");//USOC
+			    	    tmp1.append(values[19]+"~");//PRODUCT_GROUP
+			    	    tmp1.append(values[20]+"~");//PRODUCT_ID
+			    	    tmp1.append(values[21]+"~");//PRODUCT
+			    	    tmp1.append(values[22]+"~");//QTY
+			    	    tmp1.append(values[23]+"~");//INSTALL_DATE
+			    	    tmp1.append(values[24]+"~");//CANCEL_DATE
 			    	    
-			    	    tmp1.append(values[25]+"\001");//CANCEL_TYPE
-			    	    tmp1.append(values[26]+"\001");//CANCEL_REASON1
-			    	    tmp1.append(values[27]+"\001");//CANCEL_REMARKS
+			    	    tmp1.append(values[25]+"~");//CANCEL_TYPE
+			    	    tmp1.append(values[26]+"~");//CANCEL_REASON1
+			    	    tmp1.append(values[27]+"~");//CANCEL_REMARKS
 			    	  
 			    	   //是否最新 order number
 			    	
 			    	
 			    	    if(!values[23].equals("")){
 			    	    	if(!values[24].equals("")){
-			    	    	   tmp1.append("disconnected"+"\001");
+			    	    	   tmp1.append("disconnected"+"~");
 			    	    	}
 			    	    	else{
-			    	    	   tmp1.append("installed"+"\001");
+			    	    	   tmp1.append("installed"+"~");
 			    	    	}
 			    	    }
 			    	    else{
 			    	        if(!values[24].equals("")){
-			    	    	   tmp1.append("cancelled"+"\001");
+			    	    	   tmp1.append("cancelled"+"~");
 			    	    	}
 			    	    	else{
-			    	    	   tmp1.append("submitted"+"\001");
+			    	    	   tmp1.append("submitted"+"~");
 			    	    	}
 			    	    }
-			    	    tmp1.append(values[28]+"\001");//SEL_DUE_DATE
-			    	    tmp1.append(values[29]+"\001");//ONT
-			    	    tmp1.append(values[30]+"\001");//SELF_INSTALL
+			    	    tmp1.append(values[28]+"~");//SEL_DUE_DATE
+			    	    tmp1.append(values[29]+"~");//ONT
+			    	    tmp1.append(values[30]+"~");//SELF_INSTALL
 			    	  
-			    	     tmp1.append(values[31]+"\001");//eONT_Flag
-			    	    tmp1.append(values[32].replace("\001","")+"\001");//SI_Offered
+			    	     tmp1.append(values[31]+"~");//eONT_Flag
+			    	    tmp1.append(values[32]+"~");//SI_Offered
 			    	   //  System.out.println(values[32]);
 			    	    
 			    	    bw.write(tmp1.toString());
@@ -371,12 +371,12 @@ public static void getftpdata(int starttime) throws SftpException, IOException{
 				String Timestamp=filename.substring(23,31);
 				int timenow=Integer.parseInt(Timestamp);
 				System.out.println(timenow);
-				if(timenow>=starttime){
+				if(timenow==starttime){
 					Timestamp=filename.substring(23,31);
 				
 					System.out.println("start to download file from "+starttime);
 					System.out.println("downloading    "+filename);
-				   sf.download(".",filename, saveFile+filename, sftp);
+				  sf.download(".",filename, saveFile+filename, sftp);
 				   System.out.println("store in "+saveFile+filename);
 				   
 				   File f1 = new File(saveFile+filename);
@@ -392,13 +392,13 @@ public static void getftpdata(int starttime) throws SftpException, IOException{
 			       String[] keys=keyline.split("~");
 			     
 			     
-			      // String writekeys="DateTime\001CHANNEL\001VENDOR";
+			      // String writekeys="DateTime~CHANNEL~VENDOR";
 			       //bw.write(writekeys);
 			      // bw.newLine();
 		   	   //bw.flush();
 			       //begin
 			       while((line=br.readLine())!=null){
-			    	 line=line+"\001";
+			    	 line=line+"~";
 			    		
 			    	    values=line.split("\\~");//文件时间以后在弄
 			    	   // System.out.println(values[3]);
@@ -406,37 +406,37 @@ public static void getftpdata(int starttime) throws SftpException, IOException{
 			    	    //	System.out.println(values[i]);
 			    	    //	}//main
 			    	    StringBuffer tmp1 = new StringBuffer("");
-			    	    tmp1.append(Timestamp+"12:00:00"+"\001");//DateTime
-			    	    tmp1.append(values[0]+"\001");//CHANNEL
-			    	    tmp1.append(values[1]+"\001");//VENDOR
-			    	    tmp1.append("DTV"+"\001");//PARTNER
-			    	    tmp1.append(values[2]+"\001");//REP_LNAME
-			    	    tmp1.append(values[3]+"\001");//REP_FNAME
-			    	    tmp1.append(values[4]+"\001");//STORE_ID
-			    	    tmp1.append(values[5]+"\001");//SOURCE
-			    	    tmp1.append(values[6]+"\001");//BTN
-			    	    tmp1.append(values[7]+"\001");//CBR
-			    	    tmp1.append(values[8]+"\001");//CUST_LNAME
-			    	    tmp1.append(values[9]+"\001");//CUST_FNAME
-			    	    tmp1.append(values[10]+"\001");//ADDRESS
-			    	    tmp1.append(values[11]+"\001");//CITY
-			    	    tmp1.append(values[12]+"\001");//STATE
-			    	    tmp1.append(values[13]+"\001");//ZIP
-			    	    tmp1.append(values[14]+"\001");//EMAIL
-			    	    tmp1.append(values[15]+"\001");//SALES_DATE
-			    	    tmp1.append(values[16]+"\001");//ORDER_NBR
-			    	    tmp1.append(values[17]+"\001");//MON
-			    	    tmp1.append(values[18]+"\001");//USOC
-			    	    tmp1.append(values[19]+"\001");//PRODUCT_GROUP
-			    	    tmp1.append(values[20]+"\001");//PRODUCT_ID
-			    	    tmp1.append(values[21]+"\001");//PRODUCT
-			    	    tmp1.append(""+"\001");//QTY        
-			    	    tmp1.append(values[22]+"\001");//INSTALL_DATE
-			    	    tmp1.append(values[23]+"\001");//CANCEL_DATE
-			    	    tmp1.append(values[24]+"\001");//CANCEL_TYPE
+			    	    tmp1.append(Timestamp+"12:00:00"+"~");//DateTime
+			    	    tmp1.append(values[0]+"~");//CHANNEL
+			    	    tmp1.append(values[1]+"~");//VENDOR
+			    	    tmp1.append("DTV"+"~");//PARTNER
+			    	    tmp1.append(values[2]+"~");//REP_LNAME
+			    	    tmp1.append(values[3]+"~");//REP_FNAME
+			    	    tmp1.append(values[4]+"~");//STORE_ID
+			    	    tmp1.append(values[5]+"~");//SOURCE
+			    	    tmp1.append(values[6]+"~");//BTN
+			    	    tmp1.append(values[7]+"~");//CBR
+			    	    tmp1.append(values[8]+"~");//CUST_LNAME
+			    	    tmp1.append(values[9]+"~");//CUST_FNAME
+			    	    tmp1.append(values[10]+"~");//ADDRESS
+			    	    tmp1.append(values[11]+"~");//CITY
+			    	    tmp1.append(values[12]+"~");//STATE
+			    	    tmp1.append(values[13]+"~");//ZIP
+			    	    tmp1.append(values[14]+"~");//EMAIL
+			    	    tmp1.append(values[15]+"~");//SALES_DATE
+			    	    tmp1.append(values[16]+"~");//ORDER_NBR
+			    	    tmp1.append(values[17]+"~");//MON
+			    	    tmp1.append(values[18]+"~");//USOC
+			    	    tmp1.append(values[19]+"~");//PRODUCT_GROUP
+			    	    tmp1.append(values[20]+"~");//PRODUCT_ID
+			    	    tmp1.append(values[21]+"~");//PRODUCT
+			    	    tmp1.append(""+"~");//QTY        
+			    	    tmp1.append(values[22]+"~");//INSTALL_DATE
+			    	    tmp1.append(values[23]+"~");//CANCEL_DATE
+			    	    tmp1.append(values[24]+"~");//CANCEL_TYPE
 			    	    
-			    	    tmp1.append(values[25]+"\001");//CANCEL_REASON1
-			    	    tmp1.append(values[26].replace("\001","")+"\001");//CANCEL_REMARKS
+			    	    tmp1.append(values[25]+"~");//CANCEL_REASON1
+			    	    tmp1.append(values[26]+"~");//CANCEL_REMARKS
 			    	  
 			    	  
 			    	 
@@ -445,26 +445,26 @@ public static void getftpdata(int starttime) throws SftpException, IOException{
 			    	    if(!values[22].equals("")){
 			    	    	if(!values[23].equals("")){
 			    	    		System.out.println("disconnected");
-			    	    	   tmp1.append("disconnected"+"\001");
+			    	    	   tmp1.append("disconnected"+"~");
 			    	    	}
 			    	    	else{System.out.println("installed");
-			    	    	   tmp1.append("installed"+"\001");
+			    	    	   tmp1.append("installed"+"~");
 			    	    	}
 			    	    }
 			    	    else{
 			    	        if(!values[23].equals("")){System.out.println("cancelled");
-			    	    	   tmp1.append("cancelled"+"\001");
+			    	    	   tmp1.append("cancelled"+"~");
 			    	    	}
 			    	    	else{System.out.println("submitted");
-			    	    	   tmp1.append("submitted"+"\001");
+			    	    	   tmp1.append("submitted"+"~");
 			    	    	}
 			    	    } //ORDERSTATUS
-			    	    tmp1.append(""+"\001");//SEL_DUE_DATE
-			    	    tmp1.append(""+"\001");//ONT
-			    	    tmp1.append(""+"\001");//SELF_INSTALL
+			    	    tmp1.append(""+"~");//SEL_DUE_DATE
+			    	    tmp1.append(""+"~");//ONT
+			    	    tmp1.append(""+"~");//SELF_INSTALL
 			    	  
-			    	     tmp1.append(""+"\001");//eONT_Flag
-			    	    tmp1.append(""+"\001");//SI_Offered
+			    	     tmp1.append(""+"~");//eONT_Flag
+			    	    tmp1.append(""+"~");//SI_Offered
 			    	   //  System.out.println(values[32]);
 			    	    
 			    	    bw.write(tmp1.toString());
@@ -476,8 +476,8 @@ public static void getftpdata(int starttime) throws SftpException, IOException{
 			    	   writer.close();
 			    	      src = new Path(saveFile+"orderstatus_verizon_"+Timestamp+".txt");
 					      dst = new Path("/user/hadoop/Verizon");
-					    hdfs.copyFromLocalFile(src, dst);
-					  System.out.println("Upload "+saveFile+"orderstatus_verizon_"+Timestamp+".txt"+"to  " + conf.get("fs.default.name"));
+					  //  hdfs.copyFromLocalFile(src, dst);
+					 // System.out.println("Upload "+saveFile+"orderstatus_verizon_"+Timestamp+".txt"+"to  " + conf.get("fs.default.name"));
 					  //File file = new File(saveFile+"orderstatus_verizon_"+Timestamp+".txt");
 					 // file.delete();
 					
@@ -580,7 +580,7 @@ public static void hdfs2mongo() throws IOException{
 	  // System.out.print(keys[0]+"\n");
 	   while((line=br.readLine())!=null){
 		   line=line+"~";
-		   values=line.split("\001");
+		   values=line.split("~");
 		   
 		   BasicDBObject document = new BasicDBObject();
 		  // System.out.println(values.length);
