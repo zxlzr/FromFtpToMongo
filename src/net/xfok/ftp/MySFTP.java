@@ -259,7 +259,14 @@ public static void getftpdata(int starttime) throws SftpException, IOException{
 			    	    //	System.out.println(values[i]);
 			    	    //	}//main
 			    	    StringBuffer tmp1 = new StringBuffer("");
-			    	    tmp1.append(Timestamp+"12:00:00"+"\001");//DateTime
+			    	    String aaa=Timestamp.substring(0,4);
+			    	   // System.out.println(aaa);
+			    	    String bbb=Timestamp.substring(4,6);
+			    	   // System.out.println(bbb);
+			    	    String ccc=Timestamp.substring(6,8);
+			    	    //System.out.println(ccc);
+			    	    
+			    	    tmp1.append(aaa+"-"+bbb+"-"+ccc+" 12:00:00"+"\001");//DateTime
 			    	    tmp1.append(values[0]+"\001");//CHANNEL
 			    	    tmp1.append(values[1]+"\001");//VENDOR
 			    	    tmp1.append("BV"+"\001");//PARTNER
@@ -406,7 +413,14 @@ public static void getftpdata(int starttime) throws SftpException, IOException{
 			    	    //	System.out.println(values[i]);
 			    	    //	}//main
 			    	    StringBuffer tmp1 = new StringBuffer("");
-			    	    tmp1.append(Timestamp+"12:00:00"+"\001");//DateTime
+			    	    String aaa=Timestamp.substring(0,4);
+				    	   // System.out.println(aaa);
+				    	    String bbb=Timestamp.substring(4,6);
+				    	   // System.out.println(bbb);
+				    	    String ccc=Timestamp.substring(6,8);
+				    	    //System.out.println(ccc);
+				    	    
+				    	    tmp1.append(aaa+"-"+bbb+"-"+ccc+" 12:00:00"+"\001");//DateTime
 			    	    tmp1.append(values[0]+"\001");//CHANNEL
 			    	    tmp1.append(values[1]+"\001");//VENDOR
 			    	    tmp1.append("DTV"+"\001");//PARTNER
@@ -476,7 +490,7 @@ public static void getftpdata(int starttime) throws SftpException, IOException{
 			    	   writer.close();
 			    	      src = new Path(saveFile+"orderstatus_verizon_"+Timestamp+".txt");
 					      dst = new Path("/user/hadoop/Verizon");
-					    hdfs.copyFromLocalFile(src, dst);
+					   hdfs.copyFromLocalFile(src, dst);
 					  System.out.println("Upload "+saveFile+"orderstatus_verizon_"+Timestamp+".txt"+"to  " + conf.get("fs.default.name"));
 					  //File file = new File(saveFile+"orderstatus_verizon_"+Timestamp+".txt");
 					 // file.delete();
@@ -541,18 +555,18 @@ public static void getftpdata(int starttime) throws SftpException, IOException{
 	
 }
 
-public static void hdfs2mongo() throws IOException{
+public static void hdfs2mongo(int from,int to) throws IOException{
 	
 	Configuration conf = new Configuration();
 	conf.set("fs.default.name","hdfs://10.214.0.144:9000");
 	
     Mongo mongo = new Mongo("10.214.0.144", 27017);//链接配置
     //连接名为wiretap的数据库，假如数据库不存在的话，mongodb会自动建立
-    DB db = mongo.getDB("test");
+    DB db = mongo.getDB("maize");
     System.out.println("Get MongoDB ");
 // Get collection from MongoDB, database named "yourDB"
 //从Mongodb中获得名为yourColleection的数据集合，如果该数据集合不存在，Mongodb会为其新建立
-    DBCollection collection = db.getCollection("FtpData");
+    DBCollection collection = db.getCollection("VerizonOrderStatus");
 
 
     String[] keys=new String[100];
@@ -560,122 +574,151 @@ public static void hdfs2mongo() throws IOException{
 //int b=0;
     String line="";
     String keyline="";
-    
-
-     String  remotefile="hdfs://10.214.0.144:9000/user/hadoop/download/test.txt";//hdfs文件
-     FileSystem fs = FileSystem.get(URI.create(remotefile), conf);
-     Path path = new Path(remotefile);
-     FSDataInputStream in = fs.open(path);
-     BufferedReader br = new BufferedReader(new InputStreamReader(in));
-
-
-	
-
-	  try {
+   
+    for(int k=from;k<to;k++)
+	   {
 	  
-     
-	  
-	 //  keyline =br.readLine();
-	//   keys=keyline.split(",");
-	  // System.out.print(keys[0]+"\n");
-	   while((line=br.readLine())!=null){
-		   line=line+"~";
-		   values=line.split("\001");
-		   
-		   BasicDBObject document = new BasicDBObject();
-		  // System.out.println(values.length);
-		   for(int i=0;i<values.length;i++)
-		   {
-			  //  System.out.println(values[i]);
-			    document.put("DateTime",values[0]);
-			    document.put("CHANNEL",values[1]);
-			    document.put("VENDOR",values[2]);
-			    document.put("PARTNER",values[3]);
-			    document.put("REP_LNAME",values[4]);
-			    document.put("REP_FNAME",values[5]);
-			    document.put("STORE_ID",values[6]);
-			    document.put("SOURCE",values[7]);
-			    document.put("BTN",values[8]);
-			    document.put("CBR",values[9]);
-			    document.put("CUST_LNAME",values[10]);
-			    document.put("CUST_FNAME",values[11]);
-			    document.put("ADDRESS",values[12]);
-			    document.put("CITY",values[13]);
-			    document.put("STATE",values[14]);
-			    document.put("ZIP",values[15]);
-			    document.put("EMAIL",values[16]);
-			    document.put("SALES_DATE",values[17]);
-			    document.put("ORDER_NBR",values[18]);
-			    document.put("MON",values[19]);
-			    document.put("USOC",values[20]);
-			    document.put("PRODUCT_GROUP",values[21]);
-			    document.put("PRODUCT_ID",values[22]);
-			    document.put("PRODUCT",values[23]);
-			    document.put("QTY",values[24]);
-			    document.put("INSTALL_DATE",values[25]);
-			    document.put("CANCEL_DATE",values[26]);
-			    document.put("CANCEL_TYPE",values[27]);
-			    document.put("CANCEL_REASON1",values[28]);
-			    document.put("CANCEL_REMARKS",values[29]);
-			    document.put("ORDERSTATUS",values[30]);
-			    document.put("SEL_DUE_DATE",values[31]);
-			    document.put("ONT",values[32]);
-			    document.put("SELF_INSTALL",values[33]);
-			    document.put("eONT_Flag",values[34]);
-			    document.put("SI_Offered",values[35]);
-			   
-			   
-			   
-			   
-			   
-			   
-			   
-			   
-			   
-			   
-			  
-		       // document.put(keys[i],values[i]);
-		      
-		        //将新建立的document保存到collection中去
-		     
-		   }
-		   //做查询
-		   BasicDBObject obj = new BasicDBObject();
-	        obj.put("ORDER_NBR",values[18]);
-	        obj.put("MON",values[19]);
-	        obj.put("PRODUCT_ID",values[22]);
-	     
-	        DBObject cursor = collection.findOne(obj);
-	       String  ORDERSTATUS= (String) cursor.get("ORDERSTATUS");
-	        //System.out.println("find " + ORDERSTATUS);
-	      // System.out.println(ORDERSTATUS+""+values[30]);
-	      if(ORDERSTATUS.equals(values[30]))
-	        //cursor.close();
-	      { 
-		   
-		   document.put("islatest",0);
-		   
-	      }
-	      else{
-	    	  System.out.println("updated");
-	    	  document.put("islatest",1); 
-	    	  
-	      }
-		   
-		   
-		  // collection.insert(document);
-		
-	    
+    	
+    	 
+    	 String  remotefile="hdfs://10.214.0.144:9000/user/hadoop/Verizon/OrderStatusUpdate/day="+Integer.toString(k)+"/000000_0";//hdfs文件
+         FileSystem fs = FileSystem.get(URI.create(remotefile), conf);
+         Path path = new Path(remotefile);
+         FSDataInputStream in = fs.open(path);
+         BufferedReader br = new BufferedReader(new InputStreamReader(in));
+
+         System.out.print("get file"+Integer.toString(k));
+    	
+
+    	  try {
+    	  
+         
+    	  
+    	 //  keyline =br.readLine();
+    	//   keys=keyline.split(",");
+    	  
+    	   while((line=br.readLine())!=null){
+    		   line=line+"~";
+    		   values=line.split("\001");
+    		   
+    		   BasicDBObject document = new BasicDBObject();
+    		  // System.out.println(line);
+    		   for(int i=0;i<values.length;i++)
+    		   {
+    			   // System.out.println(values[i]);
+    			    document.put("DateTime",values[0]);
+    			    document.put("CHANNEL",values[1]);
+    			    document.put("VENDOR",values[2]);
+    			    document.put("PARTNER",values[3]);
+    			    document.put("REP_LNAME",values[4]);
+    			    document.put("REP_FNAME",values[5]);
+    			    document.put("STORE_ID",values[6]);
+    			    document.put("SOURCE",values[7]);
+    			    document.put("BTN",values[8]);
+    			    document.put("CBR",values[9]);
+    			    document.put("CUST_LNAME",values[10]);
+    			    document.put("CUST_FNAME",values[11]);
+    			    document.put("ADDRESS",values[12]);
+    			    document.put("CITY",values[13]);
+    			    document.put("STATE",values[14]);
+    			    document.put("ZIP",values[15]);
+    			    document.put("EMAIL",values[16]);
+    			    document.put("SALES_DATE",values[17]);
+    			    document.put("ORDER_NBR",values[18]);
+    			    document.put("MON",values[19]);
+    			    document.put("USOC",values[20]);
+    			    document.put("PRODUCT_GROUP",values[21]);
+    			    document.put("PRODUCT_ID",values[22]);
+    			    document.put("PRODUCT",values[23]);
+    			    document.put("QTY",values[24]);
+    			    document.put("INSTALL_DATE",values[25]);
+    			    document.put("CANCEL_DATE",values[26]);
+    			    document.put("CANCEL_TYPE",values[27]);
+    			    document.put("CANCEL_REASON1",values[28]);
+    			    document.put("CANCEL_REMARKS",values[29]);
+    			    document.put("ORDERSTATUS",values[30]);
+    			    document.put("SEL_DUE_DATE",values[31]);
+    			    document.put("ONT",values[32]);
+    			    document.put("SELF_INSTALL",values[33]);
+    			    document.put("eONT_Flag",values[34]);
+    			    document.put("SI_Offered",values[35]);
+    			   
+    			   
+    			   
+    			   
+    			   
+    			   
+    			   
+    			   
+    			   
+    			   
+    			  
+    		       // document.put(keys[i],values[i]);
+    		      
+    		        //将新建立的document保存到collection中去
+    		     
+    		   }
+    		   //做查询
+    		  
+    		   BasicDBObject obj = new BasicDBObject();
+    	        obj.put("ORDER_NBR",values[18]);	
+    	        obj.put("MON",values[19]);
+    	        obj.put("PRODUCT_ID",values[22]);
+    	        obj.put("islatest",1);
+    	       
+    	        DBObject cursor = collection.findOne(obj);
+    	        if(cursor!=null){
+    	       String  ORDERSTATUS= (String) cursor.get("ORDERSTATUS");
+    	        //System.out.println("find " + ORDERSTATUS);
+    	      // System.out.println(ORDERSTATUS+""+values[30]);
+    	      if(ORDERSTATUS.equals(values[30]))
+    	        //cursor.close();
+    	      { 
+    		   
+    		   document.put("islatest",0);
+    		   System.out.println("same");
+    	      }
+    	      else{
+    	    	  System.out.println("updated");
+    	    	  System.out.println(values[18]);
+    	    	  collection.update(new BasicDBObject("islatest",0),cursor);
+    	    	  document.put("islatest",1); 
+    	    	  collection.insert(document);
+    	      }
+    	        }else{
+    	        	System.out.println("new");
+    	        	 document.put("islatest",1); 
+    	        	 collection.insert(document);
+    	        }
+    	      
+    	    //  document.put("islatest",1); 
+    		   
+    		 //  collection.insert(document);
+    		
+    	    
+    	   }
+    	   System.out.println("put the "+remotefile+" data into MondoDB");
+    	   fs.close();
+
+    	  } catch (Exception e) {
+    	   e.printStackTrace();
+    	  }
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
 	   }
-	   System.out.println("put the "+remotefile+" data into MondoDB");
-	   fs.close();
 
-	  } catch (Exception e) {
-	   e.printStackTrace();
-	  }
-	
-	
-	
+    
 	
    
 
@@ -710,8 +753,8 @@ else
 	System.out.println("The system will get ftp data at "+Starttime+" everyday and get data from time"+filestarttime);
 	
 	}
-getftpdata(20140112);
-//hdfs2mongo();
+//getftpdata(20131220);
+hdfs2mongo(20131221,20131222);
 
 //一天的毫秒数
 long daySpan = 24 * 60 * 60 * 1000;
