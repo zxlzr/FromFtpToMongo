@@ -666,25 +666,31 @@ public static void hdfs2mongo(int from,int to) throws IOException{
     	        obj.put("islatest",1);
     	       
     	        DBObject cursor = collection.findOne(obj);
+    	       
     	        if(cursor!=null){
+    	        	
     	       String  ORDERSTATUS= (String) cursor.get("ORDERSTATUS");
     	        //System.out.println("find " + ORDERSTATUS);
     	      // System.out.println(ORDERSTATUS+""+values[30]);
-    	      if(ORDERSTATUS.equals(values[30]))
+    	       	if(ORDERSTATUS.equals(values[30]))
     	        //cursor.close();
     	      { 
     		   
     		   document.put("islatest",0);
     		   System.out.println("same");
     	      }
-    	      else{
+    	      	else{
     	    	  System.out.println("updated");
     	    	  System.out.println(values[18]);
-    	    	  collection.update(new BasicDBObject("islatest",0),cursor);
+    	    	  cursor.put("islatest",0);
+    	    	  collection.update(new BasicDBObject("_id",cursor.get("_id")),cursor).getN();
     	    	  document.put("islatest",1); 
     	    	  collection.insert(document);
-    	      }
-    	        }else{
+    	      
+    	        }
+    	        }
+    	        else{
+    	        	
     	        	System.out.println("new");
     	        	 document.put("islatest",1); 
     	        	 collection.insert(document);
@@ -753,8 +759,8 @@ else
 	System.out.println("The system will get ftp data at "+Starttime+" everyday and get data from time"+filestarttime);
 	
 	}
-//getftpdata(20131220);
-hdfs2mongo(20131221,20131222);
+getftpdata(20131220);
+//hdfs2mongo(20131222,20131232);
 
 //一天的毫秒数
 long daySpan = 24 * 60 * 60 * 1000;
